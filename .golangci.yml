@@ -19,7 +19,7 @@ issues:
         - gosec
 
 linters:
-  disable-all: true
+  disable-all: false
   enable:
     - asciicheck
     - depguard
@@ -29,7 +29,7 @@ linters:
     - durationcheck
     - errorlint
     - exhaustive
-    - exportloopref
+    # - exportloopref
     - funlen
     - gci
     - gocognit
