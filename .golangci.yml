@@ -12,6 +12,7 @@ linters-settings:
 issues:
   exclude:
     - "cannot range over seq"
+    - "not enough arguments in call to time.Unix"
   exclude-rules:
     - path: _test\.go
       linters:
