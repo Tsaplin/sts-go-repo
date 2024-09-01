@@ -19,7 +19,7 @@ issues:
         - gosec
 
 linters:
-  disable-all: true
+  disable-all: false
   enable:
     - asciicheck
     - depguard
