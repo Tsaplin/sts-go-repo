@@ -10,6 +10,8 @@ linters-settings:
     statements: 80
 
 issues:
+  exclude:
+    - "cannot range over seq"
   exclude-rules:
     - path: _test\.go
       linters:
