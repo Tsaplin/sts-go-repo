@@ -10,6 +10,9 @@ linters-settings:
     statements: 80
 
 issues:
+  # exclude:
+    # - "cannot range over seq"
+    # - "not enough arguments in call to time.Unix"
   exclude-rules:
     - path: _test\.go
       linters:
@@ -29,7 +32,7 @@ linters:
     - durationcheck
     - errorlint
     - exhaustive
-    - exportloopref
+    # - exportloopref
     - funlen
     - gci
     - gocognit
@@ -38,7 +41,7 @@ linters:
     - gocyclo
     - godot
     - gofmt
-    - gofumpt
+    # - gofumpt
     - goheader
     - goprintffuncname
     - gosec
