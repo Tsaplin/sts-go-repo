@@ -10,7 +10,7 @@ import (
 
 func main() {
 	fmt.Println("hw02unpackstring - function main")
-	Unpack("d\n5abc")
+	Unpack("")
 }
 
 var ErrInvalidString = errors.New("invalid string")
@@ -40,6 +40,10 @@ func Unpack(str string) (string, error) {
 	length := len(arr)
 
 	//fmt.Println("length=", length)
+
+	if length == 0 {
+		return "", nil
+	}
 
 	//Если 0-й элемент явл-ся цифрой, то выходим с ошибкой
 	_, err := strconv.Atoi(arr[0])
