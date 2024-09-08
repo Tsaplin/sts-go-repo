@@ -17,16 +17,23 @@ func main() {
 
 var ErrInvalidString = errors.New("invalid string")
 
-// Функция срезает последний исмвол строки и возвращает оставшуюся строку
+/*
+Функция срезает последний символ строки и возвращает оставшуюся строку.
+*/
 func RemoveChar(word string) (result string) {
 	length := utf8.RuneCountInString(word)
-	if length == 0 || length == 1 {
+
+	switch {
+	case length == 0 || length == 1:
 		result = ""
-	} else if length == 2 {
+	case length == 2:
 		result = word[0:1]
-	} else if length > 2 {
+	case length > 2:
 		result = word[0 : length-1]
+	default:
+		result = ""
 	}
+
 	return
 }
 
@@ -48,7 +55,7 @@ func Unpack(str string) (string, error) {
 		return "", ErrInvalidString
 	}
 
-	var resultStr string = arr[0]
+	var resultStr = arr[0]
 	var isNumber bool // Символ явл-ся цифрой
 	for i := 1; i < length; i++ {
 		number, err := strconv.Atoi(arr[i])
@@ -76,7 +83,6 @@ func Unpack(str string) (string, error) {
 				resultStr += strings.Repeat(arr[i-1], number-1)
 			}
 		}
-
 	}
 
 	// fmt.Println("resultStr=", resultStr)
