@@ -50,7 +50,6 @@ func Unpack(str string) (string, error) {
 
 	// Если 0-й элемент явл-ся цифрой, то выходим с ошибкой
 	_, err := strconv.Atoi(arr[0])
-
 	if err == nil {
 		return "", ErrInvalidString
 	}
@@ -79,7 +78,7 @@ func Unpack(str string) (string, error) {
 		} else { // Если же цифра, то повторим прошлый элемент кол-во раз = цифре
 			// Если цифра = 0, то надо срезать последний символ
 			if number == 0 {
-				var tmpStr string = sb.String()
+				tmpStr := sb.String()
 				sb.Reset()
 				sb.WriteString(RemoveChar(tmpStr))
 			} else {
@@ -89,7 +88,7 @@ func Unpack(str string) (string, error) {
 		}
 	}
 
-	//fmt.Println("sb.String()=", sb.String())
+	// fmt.Println("sb.String()=", sb.String())
 
 	return sb.String(), nil
 }
