@@ -10,7 +10,7 @@ import (
 
 func main() {
 	fmt.Println("hw02unpackstring - function main")
-	str, err := Unpack("aaa0b")
+	str, err := Unpack("qффwф0")
 	fmt.Println("str=", str)
 	fmt.Println("err=", err)
 }
@@ -22,14 +22,13 @@ var ErrInvalidString = errors.New("invalid string")
 */
 func RemoveChar(word string) (result string) {
 	length := utf8.RuneCountInString(word)
+	lastRune, _ := utf8.DecodeLastRuneInString(word)
 
 	switch {
 	case length == 0 || length == 1:
 		result = ""
-	case length == 2:
-		result = word[0:1]
-	case length > 2:
-		result = word[0 : length-1]
+	case length >= 2:
+		result = strings.TrimSuffix(word, string(lastRune))
 	default:
 		result = ""
 	}
