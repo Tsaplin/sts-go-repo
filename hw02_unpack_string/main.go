@@ -10,7 +10,7 @@ import (
 
 func main() {
 	fmt.Println("hw02unpackstring - function main")
-	str, err := Unpack("a4bc2d5e")
+	str, err := Unpack("aaa0b")
 	fmt.Println("str=", str)
 	fmt.Println("err=", err)
 }
@@ -55,7 +55,9 @@ func Unpack(str string) (string, error) {
 		return "", ErrInvalidString
 	}
 
-	var resultStr = arr[0]
+	var sb strings.Builder
+	sb.WriteString(arr[0])
+
 	var isNumber bool // Символ явл-ся цифрой
 	for i := 1; i < length; i++ {
 		number, err := strconv.Atoi(arr[i])
@@ -73,19 +75,21 @@ func Unpack(str string) (string, error) {
 
 		// Если символ не цифра, то укажем его в результирующей строке
 		if err != nil {
-			resultStr += arr[i]
+			sb.WriteString(arr[i])
 		} else { // Если же цифра, то повторим прошлый элемент кол-во раз = цифре
 			// Если цифра = 0, то надо срезать последний символ
 			if number == 0 {
-				resultStr = RemoveChar(resultStr)
+				var tmpStr string = sb.String()
+				sb.Reset()
+				sb.WriteString(RemoveChar(tmpStr))
 			} else {
 				// Если не 0, то повторить number-1 раз прошлый символ
-				resultStr += strings.Repeat(arr[i-1], number-1)
+				sb.WriteString(strings.Repeat(arr[i-1], number-1))
 			}
 		}
 	}
 
-	// fmt.Println("resultStr=", resultStr)
+	//fmt.Println("sb.String()=", sb.String())
 
-	return resultStr, nil
+	return sb.String(), nil
 }
