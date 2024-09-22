@@ -49,7 +49,7 @@ func TestTop10(t *testing.T) {
 	})
 
 	t.Run("additional test 1", func(t *testing.T) {
-		inputStr := "cat and dog, one dog,two cats and one man and dog"
+		inputText := "cat and dog, one dog,two cats and one man and dog"
 		expected := []string{
 			"and",     // 3
 			"one",     // 2
@@ -60,7 +60,7 @@ func TestTop10(t *testing.T) {
 			"dog,two", // 1
 			"man",     // 1
 		}
-		require.Equal(t, expected, Top10(inputStr))
+		require.Equal(t, expected, Top10(inputText))
 	})
 
 	t.Run("positive test", func(t *testing.T) {

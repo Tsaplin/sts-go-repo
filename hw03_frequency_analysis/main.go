@@ -9,17 +9,6 @@ import (
 func main() {
 	fmt.Println("hw03_frequency_analysis - function main")
 
-	// inputArr := make([]string, 7)
-	// inputArr[0] = "a"
-	// inputArr[1] = ""
-	// inputArr[2] = "1"
-	// inputArr[3] = "b"
-	// inputArr[4] = ""
-	// inputArr[5] = ""
-	// inputArr[6] = "c2"
-	// outputArr := removeSpaces(inputArr)
-	// fmt.Println(outputArr)
-
 	// inputSrc := make([]WordFreq, 6)
 	// inputSrc[0] = WordFreq{"boy", 2}
 	// inputSrc[1] = WordFreq{"dog", 2}
@@ -27,13 +16,9 @@ func main() {
 	// inputSrc[3] = WordFreq{"girl", 3}
 	// inputSrc[4] = WordFreq{"girll", 3}
 	// inputSrc[5] = WordFreq{"abc", 1}
-	//lexycoGraphicSort(inputSrc)
+	// lexycoGraphicSort(inputSrc)
 
-	//inputStr := "boy dog cat and"
-	//inputStr := "cat and dog, one dog,two cats and one man and dog"
-	//inputStr := ""
-
-	var inputStr = `Как видите, он  спускается  по  лестнице  вслед  за  своим
+	var text = `Как видите, он  спускается  по  лестнице  вслед  за  своим
 		другом   Кристофером   Робином,   головой   вниз,  пересчитывая
 		ступеньки собственным затылком:  бум-бум-бум.  Другого  способа
 		сходить  с  лестницы  он  пока  не  знает.  Иногда ему, правда,
@@ -67,7 +52,7 @@ func main() {
 		посидеть у огня и послушать какую-нибудь интересную сказку.
 			В этот вечер...`
 
-	res := Top10(inputStr)
+	res := Top10(text)
 	fmt.Println("Топ 10 слов: ", res)
 }
 
@@ -77,7 +62,7 @@ type WordFreq struct {
 }
 
 /*
-Функция проверяет, содержит ли переданный массив значение переданной строки
+Функция проверяет, содержит ли переданный массив значение переданной строки.
 */
 func isRepeatOfWordInArray(inputWord string, inputArr []WordFreq) bool {
 	res := false
@@ -93,7 +78,7 @@ func isRepeatOfWordInArray(inputWord string, inputArr []WordFreq) bool {
 }
 
 /*
-Функция проверяет, содержит ли переданный массив кол-во указания count
+Функция проверяет, содержит ли переданный массив кол-во указания count.
 */
 func isRepeatOfCountInArray(count int, inputArr []WordFreq) bool {
 	res := false
@@ -132,7 +117,8 @@ func lexycoGraphicSort(inputArr []WordFreq) []WordFreq {
 			}
 		}
 
-		// Лексикографическая сортировка нужна лишь в том случае, если есть несколько элементов (слов) с одинаковым значением частоты использования
+		// Лексикографическая сортировка нужна лишь в том случае, если есть несколько элементов (слов)
+		// с одинаковым значением частоты использования
 		if currentIndexEnd > currentIndexStart {
 			for k := currentIndexStart; k <= currentIndexEnd; k++ {
 				currentWords = append(currentWords, inputArr[k].word)
@@ -141,31 +127,10 @@ func lexycoGraphicSort(inputArr []WordFreq) []WordFreq {
 
 			// Заменим элемент массива, чтобы соблюдалась сортировка слов
 			for k := currentIndexStart; k <= currentIndexEnd; k++ {
-				//outputArr[k] = WordFreq{currentWords[k], currentCount}
 				outputArr = append(outputArr, WordFreq{currentWords[k-currentIndexStart], currentCount})
 			}
 		} else {
 			outputArr = append(outputArr, inputArr[i])
-		}
-	}
-
-	return outputArr
-}
-
-/*
-Функция удаляет из массива все пустые строки
-*/
-func removeSpaces(inputArr []string) []string {
-	outputArr := make([]string, len(inputArr))
-
-	for i := 0; i < len(inputArr); i++ {
-		if inputArr[i] == "" {
-			arrBefore := outputArr[:i]
-			arrAfter := outputArr[i+1:]
-			//outputArr = append(arrBefore, arrAfter...)
-			copy(outputArr, arrBefore)
-			copy(outputArr, arrAfter)
-			fmt.Println("abc")
 		}
 	}
 
@@ -204,7 +169,7 @@ func Top10(inputStr string) []string {
 		// Элементы массива левее i не анализируем, т.к. мы их уже обработали
 		for j := i + 1; j < length; j++ {
 			if elementValue == arr[j] {
-				count = count + 1
+				count++
 			}
 		}
 
