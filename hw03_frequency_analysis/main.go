@@ -9,6 +9,17 @@ import (
 func main() {
 	fmt.Println("hw03_frequency_analysis - function main")
 
+	// inputArr := make([]string, 7)
+	// inputArr[0] = "a"
+	// inputArr[1] = ""
+	// inputArr[2] = "1"
+	// inputArr[3] = "b"
+	// inputArr[4] = ""
+	// inputArr[5] = ""
+	// inputArr[6] = "c2"
+	// outputArr := removeSpaces(inputArr)
+	// fmt.Println(outputArr)
+
 	// inputSrc := make([]WordFreq, 6)
 	// inputSrc[0] = WordFreq{"boy", 2}
 	// inputSrc[1] = WordFreq{"dog", 2}
@@ -19,11 +30,10 @@ func main() {
 	//lexycoGraphicSort(inputSrc)
 
 	//inputStr := "boy dog cat and"
-	inputStr := "cat and dog, one dog,two cats and one man and dog"
+	//inputStr := "cat and dog, one dog,two cats and one man and dog"
 	//inputStr := ""
 
-	/*
-		var inputStr = `Как видите, он  спускается  по  лестнице  вслед  за  своим
+	var inputStr = `Как видите, он  спускается  по  лестнице  вслед  за  своим
 		другом   Кристофером   Робином,   головой   вниз,  пересчитывая
 		ступеньки собственным затылком:  бум-бум-бум.  Другого  способа
 		сходить  с  лестницы  он  пока  не  знает.  Иногда ему, правда,
@@ -56,7 +66,6 @@ func main() {
 		иногда,  особенно  когда  папа  дома,  он больше любит тихонько
 		посидеть у огня и послушать какую-нибудь интересную сказку.
 			В этот вечер...`
-	*/
 
 	res := Top10(inputStr)
 	fmt.Println("Топ 10 слов: ", res)
@@ -143,13 +152,42 @@ func lexycoGraphicSort(inputArr []WordFreq) []WordFreq {
 	return outputArr
 }
 
+/*
+Функция удаляет из массива все пустые строки
+*/
+func removeSpaces(inputArr []string) []string {
+	outputArr := make([]string, len(inputArr))
+
+	for i := 0; i < len(inputArr); i++ {
+		if inputArr[i] == "" {
+			arrBefore := outputArr[:i]
+			arrAfter := outputArr[i+1:]
+			//outputArr = append(arrBefore, arrAfter...)
+			copy(outputArr, arrBefore)
+			copy(outputArr, arrAfter)
+			fmt.Println("abc")
+		}
+	}
+
+	return outputArr
+}
+
 func Top10(inputStr string) []string {
 	if inputStr == "" {
 		return nil
 	}
 
 	const topCnt = 10 // Число выдаваемых самых популярных слов
+
+	inputStr = strings.ReplaceAll(inputStr, "\n\t\t\t", " ")
+	inputStr = strings.ReplaceAll(inputStr, "\n\t\t", " ")
+
+	inputStr = strings.ReplaceAll(inputStr, "    ", " ")
+	inputStr = strings.ReplaceAll(inputStr, "   ", " ")
+	inputStr = strings.ReplaceAll(inputStr, "  ", " ")
+
 	arr := strings.Split(inputStr, " ")
+
 	length := len(arr)
 
 	var wordFreqArray []WordFreq
