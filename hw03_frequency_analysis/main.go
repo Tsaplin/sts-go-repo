@@ -146,6 +146,7 @@ func Top10(inputStr string) []string {
 
 	inputStr = strings.ReplaceAll(inputStr, "\n\t\t\t", " ")
 	inputStr = strings.ReplaceAll(inputStr, "\n\t\t", " ")
+	inputStr = strings.ReplaceAll(inputStr, "\n\t", " ")
 
 	inputStr = strings.ReplaceAll(inputStr, "    ", " ")
 	inputStr = strings.ReplaceAll(inputStr, "   ", " ")
