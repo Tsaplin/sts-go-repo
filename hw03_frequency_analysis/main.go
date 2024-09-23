@@ -144,15 +144,7 @@ func Top10(inputStr string) []string {
 
 	const topCnt = 10 // Число выдаваемых самых популярных слов
 
-	inputStr = strings.ReplaceAll(inputStr, "\n\t\t\t", " ")
-	inputStr = strings.ReplaceAll(inputStr, "\n\t\t", " ")
-	inputStr = strings.ReplaceAll(inputStr, "\n\t", " ")
-
-	inputStr = strings.ReplaceAll(inputStr, "    ", " ")
-	inputStr = strings.ReplaceAll(inputStr, "   ", " ")
-	inputStr = strings.ReplaceAll(inputStr, "  ", " ")
-
-	arr := strings.Split(inputStr, " ")
+	arr := strings.Fields(inputStr)
 
 	length := len(arr)
 
