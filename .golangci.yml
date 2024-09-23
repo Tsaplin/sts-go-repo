@@ -34,13 +34,13 @@ linters:
     - exhaustive
     # - exportloopref
     - funlen
-    # - gci
+    - gci
     - gocognit
     - goconst
     - gocritic
     - gocyclo
     - godot
-    # - gofmt
+    - gofmt
     # - gofumpt
     - goheader
     - goprintffuncname
