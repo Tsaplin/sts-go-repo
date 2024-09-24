@@ -179,14 +179,16 @@ func Top10(inputStr string) []string {
 	if len(wordFreqArray) < topCnt {
 		resultLength = len(wordFreqArray)
 	}
-	topWordFreqArray := wordFreqArray[0:resultLength]
 
 	// Лексикографическая сортировка
-	lexicalSortedTopWordFreqArray := lexycoGraphicSort(topWordFreqArray)
+	lexicalSortedTopWordFreqArray := lexycoGraphicSort(wordFreqArray)
+
+	// Оставим первые resultLength элементов массива
+	topWordFreqArray := lexicalSortedTopWordFreqArray[0:resultLength]
 
 	var res []string
 	for k := 0; k < resultLength; k++ {
-		res = append(res, lexicalSortedTopWordFreqArray[k].word)
+		res = append(res, topWordFreqArray[k].word)
 	}
 
 	return res
