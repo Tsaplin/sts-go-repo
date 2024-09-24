@@ -1,6 +1,6 @@
-module github.com/fixme_my_friend/hw03_frequency_analysis
+module github.com/Tsaplin/sts-go-repo/hw03_frequency_analysis
 
-go 1.22
+go 1.22.1
 
 require github.com/stretchr/testify v1.7.0
 

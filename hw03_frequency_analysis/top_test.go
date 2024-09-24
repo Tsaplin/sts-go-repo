@@ -1,4 +1,4 @@
-package hw03frequencyanalysis
+package main
 
 import (
 	"testing"
@@ -46,6 +46,21 @@ var text = `Как видите, он  спускается  по  лестни�
 func TestTop10(t *testing.T) {
 	t.Run("no words in empty string", func(t *testing.T) {
 		require.Len(t, Top10(""), 0)
+	})
+
+	t.Run("additional test 1", func(t *testing.T) {
+		inputText := "cat and dog, one dog,two cats and one man and dog"
+		expected := []string{
+			"and",     // 3
+			"one",     // 2
+			"cat",     // 1
+			"cats",    // 1
+			"dog",     // 1
+			"dog,",    // 1
+			"dog,two", // 1
+			"man",     // 1
+		}
+		require.Equal(t, expected, Top10(inputText))
 	})
 
 	t.Run("positive test", func(t *testing.T) {
