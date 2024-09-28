@@ -1,17 +1,13 @@
 package main
 
-import (
-	"slices"
-)
-
 type List interface {
 	Len() int
 	Front() *ListItem
 	Back() *ListItem
 	PushFront(v interface{}) *ListItem
 	PushBack(v interface{}) *ListItem
-	Remove(i *ListItem, index int)
-	MoveToFront(i *ListItem)
+	Remove(i *ListItem, index int)      // todo index
+	MoveToFront(i *ListItem, index int) // todo index
 }
 
 type ListItem struct {
@@ -27,59 +23,79 @@ type myList struct {
 }
 
 func NewList() List {
-	newSlice := make([]ListItem, 1)
-	var d = myList{newSlice}
-	return d
+	newSlice := make([]ListItem, 0)
+	var d = myList{items: newSlice}
+	return &d
 }
 
 // Длина списка
-func (t myList) Len() int {
-	return len(t.items)
+func (t *myList) Len() int {
+	var listLength int = len(t.items)
+	return listLength
 }
 
 // Первый элемент
-func (t myList) Front() *ListItem {
-	return &t.items[0]
+func (t *myList) Front() *ListItem {
+	if len(t.items) > 0 {
+		return &t.items[0]
+	}
+
+	return nil
 }
 
 // Последний элемент
-func (t myList) Back() *ListItem {
+func (t *myList) Back() *ListItem {
 	indexLast := 0
 	if len(t.items) != 0 {
 		indexLast = len(t.items) - 1
+		return &t.items[indexLast]
 	}
 
-	return &t.items[indexLast]
+	return nil
 }
 
 // Добавить элемент в начало
-func (t myList) PushFront(v interface{}) *ListItem {
-	newItem := v.(ListItem)
-	newItem.Next = &t.items[0]
+func (t *myList) PushFront(v interface{}) *ListItem {
+	var newItem = ListItem{nil, nil, nil}
+	newItem.Value = v
 	newItem.Prev = nil
+	if len(t.items) > 0 {
+		newItem.Next = &t.items[0]
+		t.items[0].Prev = &newItem
+	}
+
 	t.items = append([]ListItem{newItem}, t.items...)
 	return t.Front()
 }
 
 // Добавить элемент в конец
-func (t myList) PushBack(v interface{}) *ListItem {
-	slices.Reverse(t.items)
-	t.PushFront(v) // !!! а ссылки при реверсе поменяются ???
-	slices.Reverse(t.items)
+func (t *myList) PushBack(v interface{}) *ListItem {
+	var newItem = ListItem{nil, nil, nil}
+	newItem.Value = v
+	newItem.Next = nil
+
+	listLength := len(t.items)
+	if listLength > 0 {
+		newItem.Prev = &t.items[listLength-1]
+		t.items[listLength-1].Next = &newItem
+	}
+
+	t.items = append(t.items, []ListItem{newItem}...)
+
 	return t.Back()
 }
 
 // Удалить элемент
-func (t myList) Remove(i *ListItem, index int) { // todo изначально не было index
+func (t *myList) Remove(i *ListItem, index int) { // todo изначально не было index
 	// Поменяем ссылки смежных элементов
 	prevItem := i.Prev
 	nextItem := i.Next
 
 	if prevItem != nil {
-		prevItem.Next = nextItem
+		t.items[index-1].Next = nextItem
 	}
 	if nextItem != nil {
-		nextItem.Prev = prevItem
+		t.items[index+1].Prev = prevItem
 	}
 
 	// Удалим элемент из слайса
@@ -94,34 +110,12 @@ func (t myList) Remove(i *ListItem, index int) { // todo изначально н
 }
 
 // Переместить элемент в начало
-func (t myList) MoveToFront(i *ListItem) {
+func (t *myList) MoveToFront(i *ListItem, index int) {
 	// Если элемент и так в начале списка, то ничего не делаем
 	if i.Prev == nil {
 		return
 	}
 
-	// Поменяем ссылки смежных элементов
-	prevItem := i.Prev
-	nextItem := i.Next
-
-	if prevItem != nil {
-		prevItem.Next = nextItem
-	}
-	if nextItem != nil {
-		nextItem.Prev = prevItem
-	}
-
-	// Поменяем ссылки на самом элементе
-	i.Prev = nil
-	i.Next = &t.items[0]
-
-	// Добавим элемент в слайс
-	newSlice := make([]ListItem, 1)
-	if t.Len() == 0 || t.items == nil {
-		newSlice[0] = *i
-	} else {
-
-		newSlice = append([]ListItem{*i}, t.items[0:]...)
-	}
-	t.items = newSlice
+	t.Remove(i, index)
+	t.PushFront(i.Value)
 }
