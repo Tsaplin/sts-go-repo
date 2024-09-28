@@ -26,7 +26,7 @@ func main() {
 	//t.Remove(&delElem, 0)
 
 	var elem ListItem = *t.Back()
-	t.MoveToFront(&elem, 2)
+	t.MoveToFront(&elem)
 
 	var res ListItem = *t.Front()
 	res = *t.Back()
