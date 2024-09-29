@@ -10,7 +10,6 @@ import (
 )
 
 func TestCache(t *testing.T) {
-
 	t.Run("empty cache", func(t *testing.T) {
 		c := NewCache(10)
 
