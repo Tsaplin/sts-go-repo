@@ -75,9 +75,14 @@ func (t *lruCache) Set(key Key, value interface{}) bool {
 	if item == nil {
 		if t.queue.Len() > t.capacity {
 			tail := t.queue.Back()
+			tailValue := tail.Value
 			t.queue.Remove(tail)
-			//t.items[] = nil
-			delete(t.items, key) // ??? Какой ключ у последнего элемента ?
+			// Удалим значение последнего элемента из словаря
+			for k, v := range t.items {
+				if v == tailValue {
+					t.items[k] = nil
+				}
+			}
 		}
 		t.queue.PushFront(value)
 		addedItem := t.queue.Front()
