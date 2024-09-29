@@ -17,8 +17,6 @@ type ListItem struct {
 }
 
 type myList struct {
-	//List // Remove me after realization.
-	// Place your code here.
 	length int
 	head   *ListItem
 	tail   *ListItem
@@ -28,12 +26,12 @@ func NewList() List {
 	return &myList{}
 }
 
-// Длина списка
+// Длина списка.
 func (t *myList) Len() int {
 	return t.length
 }
 
-// Первый элемент
+// Первый элемент.
 func (t *myList) Front() *ListItem {
 	if t.length > 0 {
 		return t.head
@@ -42,7 +40,7 @@ func (t *myList) Front() *ListItem {
 	return nil
 }
 
-// Последний элемент
+// Последний элемент.
 func (t *myList) Back() *ListItem {
 	if t.length != 0 {
 		return t.tail
@@ -51,7 +49,7 @@ func (t *myList) Back() *ListItem {
 	return nil
 }
 
-// Добавить элемент в начало
+// Добавить элемент в начало.
 func (t *myList) PushFront(v interface{}) *ListItem {
 	var newItem = ListItem{nil, nil, nil}
 	newItem.Value = v
@@ -69,7 +67,7 @@ func (t *myList) PushFront(v interface{}) *ListItem {
 	return t.Front()
 }
 
-// Добавить элемент в конец
+// Добавить элемент в конец.
 func (t *myList) PushBack(v interface{}) *ListItem {
 	var newItem = ListItem{nil, nil, nil}
 	newItem.Value = v
@@ -88,9 +86,9 @@ func (t *myList) PushBack(v interface{}) *ListItem {
 	return t.Back()
 }
 
-// Удалить элемент
+// Удалить элемент.
 func (t *myList) Remove(i *ListItem) {
-	// Поменяем ссылки смежных элементов
+	// Поменяем ссылки смежных элементов.
 	prevItem := i.Prev
 	nextItem := i.Next
 
@@ -110,9 +108,9 @@ func (t *myList) Remove(i *ListItem) {
 	}
 }
 
-// Переместить элемент в начало
+// Переместить элемент в начало.
 func (t *myList) MoveToFront(i *ListItem) {
-	// Если элемент и так в начале списка, то ничего не делаем
+	// Если элемент и так в начале списка, то ничего не делаем.
 	if i.Prev == nil {
 		return
 	}
