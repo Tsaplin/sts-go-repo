@@ -10,6 +10,7 @@ import (
 )
 
 func TestCache(t *testing.T) {
+
 	t.Run("empty cache", func(t *testing.T) {
 		c := NewCache(10)
 
@@ -58,6 +59,30 @@ func TestCache(t *testing.T) {
 		c.Set("d", 400)
 
 		val, ok := c.Get("a")
+		require.False(t, ok)
+		require.Nil(t, val)
+	})
+
+	t.Run("purge difficult logic", func(t *testing.T) {
+		// Для емкости кэша =3 после добавления 4-ого элемента первый должен вытолкнуться.
+		c := NewCache(3)
+		c.Set("a", 100)
+		c.Set("b", 200)
+		c.Set("c", 300)
+
+		c.Set("b", 250)
+		val, ok := c.Get("b")
+		require.True(t, ok)
+		require.Equal(t, 250, val)
+
+		c.Set("a", 150)
+		val, ok = c.Get("a")
+		require.True(t, ok)
+		require.Equal(t, 150, val)
+
+		c.Set("d", 400)
+
+		val, ok = c.Get("c")
 		require.False(t, ok)
 		require.Nil(t, val)
 	})
