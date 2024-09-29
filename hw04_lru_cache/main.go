@@ -47,7 +47,7 @@ func (t *lruCache) Set(key Key, value interface{}) bool {
 
 	// Добавляемый элемент отсутствует в словаре.
 	if item == nil {
-		if t.queue.Len()+1 > t.capacity {
+		if t.queue.Len() >= t.capacity {
 			tail := t.queue.Back()
 			tailValue := tail.Value
 			t.queue.Remove(tail)
@@ -73,4 +73,5 @@ func (t *lruCache) Set(key Key, value interface{}) bool {
 // Очистить кэш.
 func (t *lruCache) Clear() {
 	clear(t.items)
+	t.queue = NewList()
 }

@@ -33,27 +33,17 @@ func (t *myList) Len() int {
 
 // Первый элемент.
 func (t *myList) Front() *ListItem {
-	if t.length > 0 {
-		return t.head
-	}
-
-	return nil
+	return t.head
 }
 
 // Последний элемент.
 func (t *myList) Back() *ListItem {
-	if t.length != 0 {
-		return t.tail
-	}
-
-	return nil
+	return t.tail
 }
 
 // Добавить элемент в начало.
 func (t *myList) PushFront(v interface{}) *ListItem {
-	var newItem = ListItem{nil, nil, nil}
-	newItem.Value = v
-	newItem.Prev = nil
+	var newItem = ListItem{Value: v, Next: nil, Prev: nil}
 	if t.length > 0 {
 		newItem.Next = t.head
 		newItem.Next.Prev = &newItem
@@ -69,9 +59,7 @@ func (t *myList) PushFront(v interface{}) *ListItem {
 
 // Добавить элемент в конец.
 func (t *myList) PushBack(v interface{}) *ListItem {
-	var newItem = ListItem{nil, nil, nil}
-	newItem.Value = v
-	newItem.Next = nil
+	var newItem = ListItem{Value: v, Next: nil, Prev: nil}
 
 	if t.length > 0 {
 		newItem.Prev = t.tail
