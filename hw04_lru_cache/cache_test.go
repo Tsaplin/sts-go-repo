@@ -50,7 +50,16 @@ func TestCache(t *testing.T) {
 	})
 
 	t.Run("purge logic", func(t *testing.T) {
-		// Write me
+		// Для емкости кэша =3 после добавления 4-ого элемента первый должен вытолкнуться.
+		c := NewCache(3)
+		c.Set("a", 100)
+		c.Set("b", 200)
+		c.Set("c", 300)
+		c.Set("d", 400)
+
+		val, ok := c.Get("a")
+		require.False(t, ok)
+		require.Nil(t, val)
 	})
 }
 

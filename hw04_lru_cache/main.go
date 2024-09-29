@@ -47,14 +47,14 @@ func (t *lruCache) Set(key Key, value interface{}) bool {
 
 	// Добавляемый элемент отсутствует в словаре.
 	if item == nil {
-		if t.queue.Len() > t.capacity {
+		if t.queue.Len()+1 > t.capacity {
 			tail := t.queue.Back()
 			tailValue := tail.Value
 			t.queue.Remove(tail)
 			// Удалим значение последнего элемента из словаря.
 			for k, v := range t.items {
-				if v == tailValue {
-					t.items[k] = nil
+				if v.Value == tailValue {
+					delete(t.items, k)
 				}
 			}
 		}
