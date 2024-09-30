@@ -36,9 +36,10 @@ func (t *lruCache) Get(key Key) (interface{}, bool) {
 	if item == nil {
 		return nil, false
 	}
-	t.queue.PushFront(item.Value)
+	dynamicValue := item.Value.(map[Key]interface{})
+	t.queue.PushFront(dynamicValue)
 
-	return item.Value, true
+	return dynamicValue[key], true
 }
 
 // Добавить значение в кэш по ключу.
@@ -52,20 +53,23 @@ func (t *lruCache) Set(key Key, value interface{}) bool {
 			tailValue := tail.Value
 			t.queue.Remove(tail)
 			// Удалим значение последнего элемента из словаря.
-			for k, v := range t.items {
-				if v.Value == tailValue {
-					delete(t.items, k)
-				}
+			for k := range tailValue.(map[Key]interface{}) {
+				delete(t.items, k)
 			}
 		}
-		t.queue.PushFront(value)
+		tempMap := make(map[Key]interface{})
+		dynamicValue := value.(int)
+		tempMap[key] = dynamicValue
+		t.queue.PushFront(tempMap)
 		addedItem := t.queue.Front()
 		t.items[key] = addedItem
 		return false
 	}
 
 	// Добавляемый элемент присутствует в словаре.
-	item.Value = value
+	tempMap := make(map[Key]interface{})
+	tempMap[key] = value
+	item.Value = tempMap
 	t.queue.MoveToFront(item)
 	return true
 }
