@@ -22,6 +22,11 @@ type lruCache struct {
 	items    map[Key]*ListItem
 }
 
+type dataStruct struct {
+	key   Key
+	value interface{}
+}
+
 func NewCache(capacity int) Cache {
 	return &lruCache{
 		capacity: capacity,
@@ -36,15 +41,16 @@ func (t *lruCache) Get(key Key) (interface{}, bool) {
 	if item == nil {
 		return nil, false
 	}
-	dynamicValue := item.Value.(map[Key]interface{})
+	dynamicValue := item.Value.(dataStruct)
 	t.queue.PushFront(dynamicValue)
 
-	return dynamicValue[key], true
+	return dynamicValue.value, true
 }
 
 // Добавить значение в кэш по ключу.
 func (t *lruCache) Set(key Key, value interface{}) bool {
 	item := t.items[key]
+	data := dataStruct{key: key, value: value.(int)}
 
 	// Добавляемый элемент отсутствует в словаре.
 	if item == nil {
@@ -53,23 +59,16 @@ func (t *lruCache) Set(key Key, value interface{}) bool {
 			tailValue := tail.Value
 			t.queue.Remove(tail)
 			// Удалим значение последнего элемента из словаря.
-			for k := range tailValue.(map[Key]interface{}) {
-				delete(t.items, k)
-			}
+			delete(t.items, tailValue.(dataStruct).key)
 		}
-		tempMap := make(map[Key]interface{})
-		dynamicValue := value.(int)
-		tempMap[key] = dynamicValue
-		t.queue.PushFront(tempMap)
+		t.queue.PushFront(data)
 		addedItem := t.queue.Front()
 		t.items[key] = addedItem
 		return false
 	}
 
 	// Добавляемый элемент присутствует в словаре.
-	tempMap := make(map[Key]interface{})
-	tempMap[key] = value
-	item.Value = tempMap
+	item.Value = data
 	t.queue.MoveToFront(item)
 	return true
 }
