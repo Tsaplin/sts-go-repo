@@ -82,18 +82,17 @@ func (t *myList) Remove(i *ListItem) {
 
 	if prevItem != nil {
 		prevItem.Next = nextItem
+	} else {
+		t.head = nextItem
 	}
+
 	if nextItem != nil {
 		nextItem.Prev = prevItem
+	} else {
+		t.tail = prevItem
 	}
 
 	t.length--
-	if i.Next == nil {
-		t.tail = i.Prev
-	}
-	if i.Prev == nil {
-		t.head = i.Next
-	}
 }
 
 // Переместить элемент в начало.
