@@ -42,7 +42,7 @@ func (t *lruCache) Get(key Key) (interface{}, bool) {
 		return nil, false
 	}
 	dynamicValue := item.Value.(dataStruct)
-	t.queue.PushFront(dynamicValue)
+	t.queue.MoveToFront(item)
 
 	return dynamicValue.value, true
 }
