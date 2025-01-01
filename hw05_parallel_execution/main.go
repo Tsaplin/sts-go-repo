@@ -58,6 +58,7 @@ func generator(tasks []Task) chan Task {
 // Функция (только для дебага) обработки задач. 7-ая и 8-ая задачи обрабатываются с ошибкой
 func taskTreatmentFunc() []Task {
 	var tasks []Task
+	//var runTasksCount int32
 	for k := 0; k < 10; k++ {
 		taskSleep := time.Millisecond * time.Duration(rand.Intn(100))
 
