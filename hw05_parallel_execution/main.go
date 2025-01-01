@@ -3,9 +3,11 @@ package main
 import (
 	"errors"
 	"fmt"
+	"math/rand"
 	"runtime"
 	"strconv"
 	"sync"
+	"time"
 )
 
 var ErrErrorsLimitExceeded = errors.New("errors limit exceeded")
@@ -15,24 +17,25 @@ type Task func() error
 func main() {
 	fmt.Println("hw05_parallel_execution - main start")
 
-	var tasksOfJob []Task
-	tasksOfJob = append(tasksOfJob, nil)
-	tasksOfJob = append(tasksOfJob, nil)
-	tasksOfJob = append(tasksOfJob, nil)
+	//var tasksOfJob []Task
+	// tasksOfJob = append(tasksOfJob, nil)
+	// tasksOfJob = append(tasksOfJob, nil)
+	// tasksOfJob = append(tasksOfJob, nil)
 
-	tasksOfJob = append(tasksOfJob, nil)
-	tasksOfJob = append(tasksOfJob, nil)
-	tasksOfJob = append(tasksOfJob, nil)
+	// tasksOfJob = append(tasksOfJob, nil)
+	// tasksOfJob = append(tasksOfJob, nil)
+	// tasksOfJob = append(tasksOfJob, nil)
 
-	tasksOfJob = append(tasksOfJob, nil)
-	tasksOfJob = append(tasksOfJob, nil)
-	tasksOfJob = append(tasksOfJob, nil)
+	// tasksOfJob = append(tasksOfJob, nil)
+	// tasksOfJob = append(tasksOfJob, nil)
+	// tasksOfJob = append(tasksOfJob, nil)
 
-	tasksOfJob = append(tasksOfJob, nil)
-	tasksOfJob = append(tasksOfJob, nil)
-	tasksOfJob = append(tasksOfJob, nil)
+	// tasksOfJob = append(tasksOfJob, nil)
+	// tasksOfJob = append(tasksOfJob, nil)
+	// tasksOfJob = append(tasksOfJob, nil)
 
-	Run(tasksOfJob, 6, 1)
+	tasksOfJob := taskTreatmentFunc()
+	Run(tasksOfJob, 5, 1)
 	//time.Sleep(2 * time.Second)
 	fmt.Println("Finish Count of active go routines in main = ", runtime.NumGoroutine())
 	fmt.Println("hw05_parallel_execution - main finish")
@@ -53,13 +56,33 @@ func generator(tasks []Task) <-chan Task {
 }
 
 // Создание мапы с номерами "ошибочных" значений индекса (ключа)
-func fillErrIndexMap() map[int]int {
-	errIndexMap := make(map[int]int)
-	errIndexMap[3] = 1
-	errIndexMap[4] = 1
-	errIndexMap[5] = 1
+// func fillErrIndexMap() map[int]int {
+// 	errIndexMap := make(map[int]int)
+// 	errIndexMap[3] = 1
+// 	errIndexMap[4] = 1
+// 	errIndexMap[5] = 1
 
-	return errIndexMap
+// 	return errIndexMap
+// }
+
+// Функция (только для дебага) обработки задач. 7-ая и 8-ая задачи обрабатываются с ошибкой
+func taskTreatmentFunc() []Task {
+	var tasks []Task
+	for k := 0; k < 10; k++ {
+		taskSleep := time.Millisecond * time.Duration(rand.Intn(100))
+
+		tasks = append(tasks, func() error {
+			time.Sleep(taskSleep)
+			//atomic.AddInt32(&runTasksCount, 1)
+			if k == 7 || k == 8 {
+				err := fmt.Errorf("error from task %d", k)
+				return err
+			} else {
+				return nil
+			}
+		})
+	}
+	return tasks
 }
 
 // Run starts tasks in n goroutines and stops its work when receiving m errors from tasks.
@@ -72,7 +95,7 @@ func Run(tasks []Task, n, m int) error {
 	// Создадим канал для остановки данной функции из рутин
 	stopCh := make(chan bool)
 
-	errIndexMap := fillErrIndexMap()
+	//errIndexMap := fillErrIndexMap()
 	errCount := 0
 
 	wg := sync.WaitGroup{}
@@ -90,7 +113,7 @@ func Run(tasks []Task, n, m int) error {
 					//defer wg.Done()
 					fmt.Println("i = " + strconv.Itoa(i) + " Exec of go routine")
 					// Если индекс относится к одному из списка "ошибочных", то выходим из функции
-					_, isErrorIndex := errIndexMap[i]
+					isErrorIndex := true // errIndexMap[i]
 					if isErrorIndex {
 						mu.Lock()
 						errCount++
@@ -102,8 +125,8 @@ func Run(tasks []Task, n, m int) error {
 					}
 
 					if errCount >= m {
-						fmt.Println("Отправлен сигнал об остановке")
 						stopChWrite <- true
+						fmt.Println("Отправлен сигнал об остановке")
 						return ErrErrorsLimitExceeded
 					}
 
