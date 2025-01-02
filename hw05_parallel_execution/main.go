@@ -68,7 +68,8 @@ func Run(tasks []Task, n, m int) error {
 	// Создадим канал обрабатываемых задач и заполним его
 	ch := generator(tasks)
 	// Создадим канал для остановки данной функции из рутин.
-	// Сделаем его буферизованным с кол-вом элементов больше кол-ва одновременно работающих горутин, чтобы избежать блокировки горутин
+	// Сделаем его буферизованным с кол-вом элементов больше кол-ва одновременно работающих горутин,
+	// чтобы избежать блокировки горутин
 	stopCh := make(chan bool, n+2)
 	// Счетчик кол-ва ошибок обработки задач
 	errCount := 0
@@ -100,15 +101,18 @@ func Run(tasks []Task, n, m int) error {
 						stopWorkCh <- true
 						// close(stopWorkCh) тут закрывать канал не будем, т.к. в этот блок можем и не попасть
 						// fmt.Println("Отправлен сигнал об остановке")
-						return ErrErrorsLimitExceeded
+						// return ErrErrorsLimitExceeded
 					}
 
-					return nil
-				case <-stopWorkCh:
+					// return nil
+				case val := <-stopWorkCh:
 					// Получен сигнал об остановке
 					// fmt.Println("i = " + strconv.Itoa(i) + " Exec of go routine")
 					// fmt.Println("Остановлен")
-					return ErrErrorsLimitExceeded
+					if val {
+						return ErrErrorsLimitExceeded
+					}
+					return nil
 				}
 			}
 		}(ch, stopCh)
