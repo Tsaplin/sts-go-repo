@@ -36,7 +36,7 @@ func main() {
 
 	tasksOfJob := taskTreatmentFunc()
 	Run(tasksOfJob, 5, 1)
-	//time.Sleep(2 * time.Second)
+	//time.Sleep(5 * time.Second)
 	fmt.Println("Finish Count of active go routines in main = ", runtime.NumGoroutine())
 	fmt.Println("hw05_parallel_execution - main finish")
 }
@@ -107,18 +107,15 @@ func Run(tasks []Task, n, m int) error {
 
 					//defer wg.Done()
 					fmt.Println("i = " + strconv.Itoa(i) + " Exec of go routine")
-					tt := <-taskCh
+					tt, ok := <-taskCh
 					fmt.Println("Task tt was readen from channel of tasks = ", tt)
-					// Если при обработке задачи возникла ошибка, то выходим из функции
-					isErrorIndex := true // todo
-					if isErrorIndex {
+
+					// Если при обработке задачи возникла ошибка, то увеличим значение errCount
+					if !ok {
 						mu.Lock()
 						errCount++
 						mu.Unlock()
-
 						fmt.Println("errCount = " + strconv.Itoa(errCount))
-
-						return nil
 					}
 
 					if errCount >= m {
@@ -127,11 +124,13 @@ func Run(tasks []Task, n, m int) error {
 						fmt.Println("Отправлен сигнал об остановке")
 						return ErrErrorsLimitExceeded
 					}
+
+					return nil
 				case <-stopWorkCh:
 					// Получен сигнал об остановке
 					//defer wg.Done()
 					//fmt.Println("i = " + strconv.Itoa(i) + " Exec of go routine")
-					//fmt.Println("Остановлен")
+					fmt.Println("Остановлен")
 					return ErrErrorsLimitExceeded
 				}
 			}
