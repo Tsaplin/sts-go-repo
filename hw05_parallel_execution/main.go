@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"math/rand"
 	"runtime"
-	"strconv"
 	"sync"
 	"time"
 )
@@ -16,23 +15,6 @@ type Task func() error
 
 func main() {
 	fmt.Println("hw05_parallel_execution - main start")
-
-	// var tasksOfJob []Task
-	// tasksOfJob = append(tasksOfJob, nil)
-	// tasksOfJob = append(tasksOfJob, nil)
-	// tasksOfJob = append(tasksOfJob, nil)
-
-	// tasksOfJob = append(tasksOfJob, nil)
-	// tasksOfJob = append(tasksOfJob, nil)
-	// tasksOfJob = append(tasksOfJob, nil)
-
-	// tasksOfJob = append(tasksOfJob, nil)
-	// tasksOfJob = append(tasksOfJob, nil)
-	// tasksOfJob = append(tasksOfJob, nil)
-
-	// tasksOfJob = append(tasksOfJob, nil)
-	// tasksOfJob = append(tasksOfJob, nil)
-	// tasksOfJob = append(tasksOfJob, nil)
 
 	tasksOfJob := taskTreatmentFunc()
 	Run(tasksOfJob, 5, 1)
@@ -85,10 +67,9 @@ func Run(tasks []Task, n, m int) error {
 
 	// Создадим канал обрабатываемых задач и заполним его
 	ch := generator(tasks)
-	fmt.Println("Канал=", ch)
-
 	// Создадим канал для остановки данной функции из рутин
 	stopCh := make(chan bool)
+	// Счетчик кол-ва ошибок обработки задач
 	errCount := 0
 
 	wg := sync.WaitGroup{}
@@ -97,39 +78,35 @@ func Run(tasks []Task, n, m int) error {
 	for i := 0; i < n; i++ {
 		// Функция обработки задач из канала
 		go func(taskCh chan Task, stopWorkCh chan bool) error {
-			// fmt.Println("Iteration i = " + strconv.Itoa(i) + " n=" + strconv.Itoa(n))
 			wg.Done()
 			for {
 				select {
 				default:
-					// Выполнение работы в горутине
-
-					// defer wg.Done()
-					fmt.Println("i = " + strconv.Itoa(i) + " Exec of go routine")
-					tt, ok := <-taskCh
-					fmt.Println("Task tt was readen from channel of tasks = ", tt)
+					// fmt.Println("i = " + strconv.Itoa(i) + " Exec of go routine")
+					_, ok := <-taskCh
+					// fmt.Println("Task tt was readen from channel of tasks = ", tt)
 
 					// Если при обработке задачи возникла ошибка, то увеличим значение errCount
 					if !ok {
 						mu.Lock()
 						errCount++
 						mu.Unlock()
-						fmt.Println("errCount = " + strconv.Itoa(errCount))
+						// fmt.Println("errCount = " + strconv.Itoa(errCount))
 					}
 
+					// Если превышего предельно допустимое кол-во ошибок обработки задач, отправим "сигнал" о завершении работы рутин
 					if errCount >= m {
 						stopWorkCh <- true
-						// close(stopWorkCh)
-						fmt.Println("Отправлен сигнал об остановке")
+						// close(stopWorkCh) тут закрывать канал не будем, т.к. в этот блок можем и не попасть
+						// fmt.Println("Отправлен сигнал об остановке")
 						return ErrErrorsLimitExceeded
 					}
 
 					return nil
 				case <-stopWorkCh:
 					// Получен сигнал об остановке
-					// defer wg.Done()
 					// fmt.Println("i = " + strconv.Itoa(i) + " Exec of go routine")
-					fmt.Println("Остановлен")
+					// fmt.Println("Остановлен")
 					return ErrErrorsLimitExceeded
 				}
 			}
