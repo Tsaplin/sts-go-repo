@@ -17,7 +17,7 @@ type Task func() error
 func main() {
 	fmt.Println("hw05_parallel_execution - main start")
 
-	//var tasksOfJob []Task
+	// var tasksOfJob []Task
 	// tasksOfJob = append(tasksOfJob, nil)
 	// tasksOfJob = append(tasksOfJob, nil)
 	// tasksOfJob = append(tasksOfJob, nil)
@@ -36,12 +36,12 @@ func main() {
 
 	tasksOfJob := taskTreatmentFunc()
 	Run(tasksOfJob, 5, 1)
-	//time.Sleep(5 * time.Second)
+	// time.Sleep(5 * time.Second)
 	fmt.Println("Finish Count of active go routines in main = ", runtime.NumGoroutine())
 	fmt.Println("hw05_parallel_execution - main finish")
 }
 
-// Создание канала обрабатываемых задач и его заполнение
+// Создание канала обрабатываемых задач и его заполнение.
 func generator(tasks []Task) chan Task {
 	c := make(chan Task)
 
@@ -55,22 +55,21 @@ func generator(tasks []Task) chan Task {
 	return c
 }
 
-// Функция (только для дебага) обработки задач. 7-ая и 8-ая задачи обрабатываются с ошибкой
+// Функция (только для дебага) обработки задач. 7-ая и 8-ая задачи обрабатываются с ошибкой.
 func taskTreatmentFunc() []Task {
 	var tasks []Task
-	//var runTasksCount int32
+	// var runTasksCount int32
 	for k := 0; k < 10; k++ {
 		taskSleep := time.Millisecond * time.Duration(rand.Intn(100))
 
 		tasks = append(tasks, func() error {
 			time.Sleep(taskSleep)
-			//atomic.AddInt32(&runTasksCount, 1)
+			// atomic.AddInt32(&runTasksCount, 1)
 			if k == 7 || k == 8 {
 				err := fmt.Errorf("error from task %d", k)
 				return err
-			} else {
-				return nil
 			}
+			return nil
 		})
 	}
 	return tasks
@@ -98,14 +97,14 @@ func Run(tasks []Task, n, m int) error {
 	for i := 0; i < n; i++ {
 		// Функция обработки задач из канала
 		go func(taskCh chan Task, stopWorkCh chan bool) error {
-			//fmt.Println("Iteration i = " + strconv.Itoa(i) + " n=" + strconv.Itoa(n))
+			// fmt.Println("Iteration i = " + strconv.Itoa(i) + " n=" + strconv.Itoa(n))
 			wg.Done()
 			for {
 				select {
 				default:
 					// Выполнение работы в горутине
 
-					//defer wg.Done()
+					// defer wg.Done()
 					fmt.Println("i = " + strconv.Itoa(i) + " Exec of go routine")
 					tt, ok := <-taskCh
 					fmt.Println("Task tt was readen from channel of tasks = ", tt)
@@ -128,18 +127,17 @@ func Run(tasks []Task, n, m int) error {
 					return nil
 				case <-stopWorkCh:
 					// Получен сигнал об остановке
-					//defer wg.Done()
-					//fmt.Println("i = " + strconv.Itoa(i) + " Exec of go routine")
+					// defer wg.Done()
+					// fmt.Println("i = " + strconv.Itoa(i) + " Exec of go routine")
 					fmt.Println("Остановлен")
 					return ErrErrorsLimitExceeded
 				}
 			}
 		}(ch, stopCh)
-
 	}
 	wg.Wait()
 
-	//time.Sleep(2 * time.Second)
+	// time.Sleep(2 * time.Second)
 
 	fmt.Println("Finish Count of active go routines in function Run = ", runtime.NumGoroutine())
 	return nil
