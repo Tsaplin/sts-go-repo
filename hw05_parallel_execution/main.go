@@ -119,7 +119,7 @@ func Run(tasks []Task, n, m int) error {
 
 					if errCount >= m {
 						stopWorkCh <- true
-						//close(stopWorkCh)
+						// close(stopWorkCh)
 						fmt.Println("Отправлен сигнал об остановке")
 						return ErrErrorsLimitExceeded
 					}
