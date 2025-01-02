@@ -36,7 +36,7 @@ func main() {
 
 	tasksOfJob := taskTreatmentFunc()
 	Run(tasksOfJob, 5, 1)
-	// time.Sleep(5 * time.Second)
+	// time.Sleep(2 * time.Second)
 	fmt.Println("Finish Count of active go routines in main = ", runtime.NumGoroutine())
 	fmt.Println("hw05_parallel_execution - main finish")
 }
@@ -119,7 +119,7 @@ func Run(tasks []Task, n, m int) error {
 
 					if errCount >= m {
 						stopWorkCh <- true
-						close(stopWorkCh)
+						//close(stopWorkCh)
 						fmt.Println("Отправлен сигнал об остановке")
 						return ErrErrorsLimitExceeded
 					}
@@ -136,8 +136,9 @@ func Run(tasks []Task, n, m int) error {
 		}(ch, stopCh)
 	}
 	wg.Wait()
+	close(stopCh)
 
-	// time.Sleep(2 * time.Second)
+	time.Sleep(2 * time.Second)
 
 	fmt.Println("Finish Count of active go routines in function Run = ", runtime.NumGoroutine())
 	return nil
