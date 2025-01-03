@@ -16,16 +16,16 @@ type Task func() error
 func main() {
 	fmt.Println("hw05_parallel_execution - main start")
 
-	tasksOfJob := taskTreatmentFunc()
-	Run(tasksOfJob, 5, 1)
+	tasksOfJob := taskPrepareFunc()
+	Run(tasksOfJob, 5, 2)
 	// time.Sleep(2 * time.Second)
 	fmt.Println("Finish Count of active go routines in main = ", runtime.NumGoroutine())
 	fmt.Println("hw05_parallel_execution - main finish")
 }
 
 // Создание канала обрабатываемых задач и его заполнение.
-func generator(tasks []Task) chan Task {
-	c := make(chan Task)
+func generator(tasks []Task, channelCapacity int) chan Task {
+	c := make(chan Task, channelCapacity)
 
 	go func() {
 		for _, task := range tasks {
@@ -37,8 +37,8 @@ func generator(tasks []Task) chan Task {
 	return c
 }
 
-// Функция (только для дебага) обработки задач. 7-ая и 8-ая задачи обрабатываются с ошибкой.
-func taskTreatmentFunc() []Task {
+// Функция (только для дебага) подготовки массива задач. 7-ая и 8-ая задачи обрабатываются с ошибкой.
+func taskPrepareFunc() []Task {
 	var tasks []Task
 	// var runTasksCount int32
 	for k := 0; k < 10; k++ {
@@ -66,7 +66,7 @@ func Run(tasks []Task, n, m int) error {
 	}
 
 	// Создадим канал обрабатываемых задач и заполним его
-	ch := generator(tasks)
+	ch := generator(tasks, len(tasks)+2)
 	// Создадим канал для остановки данной функции из рутин.
 	// Сделаем его буферизованным с кол-вом элементов больше кол-ва одновременно работающих горутин,
 	// чтобы избежать блокировки горутин
@@ -85,11 +85,13 @@ func Run(tasks []Task, n, m int) error {
 				select {
 				default:
 					// fmt.Println("i = " + strconv.Itoa(i) + " Exec of go routine")
-					_, ok := <-taskCh
+					tt := <-taskCh
 					// fmt.Println("Task tt was readen from channel of tasks = ", tt)
 
 					// Если при обработке задачи возникла ошибка, то увеличим значение errCount
-					if !ok {
+					var err error
+					err = tt()
+					if err != nil {
 						mu.Lock()
 						errCount++
 						mu.Unlock()
