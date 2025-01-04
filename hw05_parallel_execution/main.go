@@ -80,33 +80,33 @@ func Run(tasks []Task, n, m int) error {
 	for i := 0; i < n; i++ {
 		// Функция обработки задач из канала
 		go func(taskCh chan Task, stopWorkCh chan bool) error {
-			wg.Done()
+			defer wg.Done()
 			for {
 				select {
-				default:
+				case tt, ok := <-taskCh:
 					// fmt.Println("i = " + strconv.Itoa(i) + " Exec of go routine")
-					tt := <-taskCh
+
 					// fmt.Println("Task tt was readen from channel of tasks = ", tt)
 
+					if !ok {
+						return nil
+					}
+
 					// Если при обработке задачи возникла ошибка, то увеличим значение errCount
-					var err error
-					err = tt()
+					var err = tt()
 					if err != nil {
 						mu.Lock()
 						errCount++
+						// Если превышего предельно допустимое кол-во ошибок обработки задач, отправим "сигнал" о завершении работы рутин
+						if errCount >= m {
+							stopWorkCh <- true
+							// close(stopWorkCh) тут закрывать канал не будем, т.к. в этот блок можем и не попасть
+							// fmt.Println("Отправлен сигнал об остановке")
+							// return ErrErrorsLimitExceeded
+						}
 						mu.Unlock()
 						// fmt.Println("errCount = " + strconv.Itoa(errCount))
 					}
-
-					// Если превышего предельно допустимое кол-во ошибок обработки задач, отправим "сигнал" о завершении работы рутин
-					if errCount >= m {
-						stopWorkCh <- true
-						// close(stopWorkCh) тут закрывать канал не будем, т.к. в этот блок можем и не попасть
-						// fmt.Println("Отправлен сигнал об остановке")
-						// return ErrErrorsLimitExceeded
-					}
-
-					// return nil
 				case val := <-stopWorkCh:
 					// Получен сигнал об остановке
 					// fmt.Println("i = " + strconv.Itoa(i) + " Exec of go routine")
