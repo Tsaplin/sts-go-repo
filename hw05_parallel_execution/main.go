@@ -47,7 +47,7 @@ func taskPrepareFunc() []Task {
 		tasks = append(tasks, func() error {
 			time.Sleep(taskSleep)
 			// atomic.AddInt32(&runTasksCount, 1)
-			if k == 7 || k == 8 {
+			if k == 2 || k == 3 || k == 7 || k == 8 {
 				err := fmt.Errorf("error from task %d", k)
 				return err
 			}
@@ -59,7 +59,7 @@ func taskPrepareFunc() []Task {
 
 // Run starts tasks in n goroutines and stops its work when receiving m errors from tasks.
 func Run(tasks []Task, n, m int) error {
-	fmt.Println("Start Count of active go routines = ", runtime.NumGoroutine())
+	// fmt.Println("Start Count of active go routines = ", runtime.NumGoroutine())
 
 	if m <= 0 {
 		return ErrErrorsLimitExceeded
@@ -84,20 +84,18 @@ func Run(tasks []Task, n, m int) error {
 			for {
 				select {
 				case tt, ok := <-taskCh:
-					// fmt.Println("i = " + strconv.Itoa(i) + " Exec of go routine")
-
-					// fmt.Println("Task tt was readen from channel of tasks = ", tt)
-
 					if !ok {
 						return nil
 					}
 
+					// fmt.Println("i = " + strconv.Itoa(i) + " Exec of go routine")
+					// fmt.Println("Task tt was readen from channel of tasks = ", tt)
 					// Если при обработке задачи возникла ошибка, то увеличим значение errCount
 					var err = tt()
 					if err != nil {
 						mu.Lock()
 						errCount++
-						// Если превышего предельно допустимое кол-во ошибок обработки задач, отправим "сигнал" о завершении работы рутин
+						// Если превышено предельно допустимое кол-во ошибок обработки задач, отправим "сигнал" о завершении работы рутин
 						if errCount >= m {
 							stopWorkCh <- true
 							// close(stopWorkCh) тут закрывать канал не будем, т.к. в этот блок можем и не попасть
@@ -122,8 +120,8 @@ func Run(tasks []Task, n, m int) error {
 	wg.Wait()
 	close(stopCh)
 
-	time.Sleep(2 * time.Second)
+	// time.Sleep(2 * time.Second)
 
-	fmt.Println("Finish Count of active go routines in function Run = ", runtime.NumGoroutine())
+	// fmt.Println("Finish Count of active go routines in function Run = ", runtime.NumGoroutine())
 	return nil
 }
