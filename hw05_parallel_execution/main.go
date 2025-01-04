@@ -57,7 +57,7 @@ func taskPrepareFunc() []Task {
 	return tasks
 }
 
-// Функция меняет значение кода ошибки, если код отличен от nil
+// Функция меняет значение кода ошибки, если код отличен от nil.
 func saveErrCode(mu *sync.Mutex, errCode error) error {
 	mu.Lock()
 	if errCode == nil {
