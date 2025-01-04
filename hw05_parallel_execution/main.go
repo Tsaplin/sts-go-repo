@@ -57,6 +57,16 @@ func taskPrepareFunc() []Task {
 	return tasks
 }
 
+// Функция меняет значение кода ошибки, если код отличен от nil
+func saveErrCode(mu *sync.Mutex, errCode error) error {
+	mu.Lock()
+	if errCode == nil {
+		errCode = ErrErrorsLimitExceeded
+	}
+	mu.Unlock()
+	return errCode
+}
+
 // Run starts tasks in n goroutines and stops its work when receiving m errors from tasks.
 func Run(tasks []Task, n, m int) error {
 	// fmt.Println("Start Count of active go routines = ", runtime.NumGoroutine())
@@ -73,6 +83,9 @@ func Run(tasks []Task, n, m int) error {
 	stopCh := make(chan bool, n+2)
 	// Счетчик кол-ва ошибок обработки задач
 	errCount := 0
+	// Код ошибки функции Run
+	var errCode error
+	errCode = nil
 
 	wg := sync.WaitGroup{}
 	wg.Add(n)
@@ -110,6 +123,7 @@ func Run(tasks []Task, n, m int) error {
 					// fmt.Println("i = " + strconv.Itoa(i) + " Exec of go routine")
 					// fmt.Println("Остановлен")
 					if val {
+						errCode = saveErrCode(&mu, errCode)
 						return ErrErrorsLimitExceeded
 					}
 					return nil
@@ -123,5 +137,5 @@ func Run(tasks []Task, n, m int) error {
 	// time.Sleep(2 * time.Second)
 
 	// fmt.Println("Finish Count of active go routines in function Run = ", runtime.NumGoroutine())
-	return nil
+	return errCode
 }
