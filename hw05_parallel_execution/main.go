@@ -23,20 +23,6 @@ func main() {
 	fmt.Println("hw05_parallel_execution - main finish")
 }
 
-// Создание канала обрабатываемых задач и его заполнение.
-func generator(tasks []Task, channelCapacity int) chan Task {
-	c := make(chan Task, channelCapacity)
-
-	go func() {
-		for _, task := range tasks {
-			c <- task
-		}
-		close(c)
-	}()
-
-	return c
-}
-
 // Функция (только для дебага) подготовки массива задач. 7-ая и 8-ая задачи обрабатываются с ошибкой.
 func taskPrepareFunc() []Task {
 	var tasks []Task
@@ -75,12 +61,10 @@ func Run(tasks []Task, n, m int) error {
 		return ErrErrorsLimitExceeded
 	}
 
-	// Создадим канал обрабатываемых задач и заполним его
-	ch := generator(tasks, len(tasks)+2)
-	// Создадим канал для остановки данной функции из рутин.
-	// Сделаем его буферизованным с кол-вом элементов больше кол-ва одновременно работающих горутин,
-	// чтобы избежать блокировки горутин
-	stopCh := make(chan bool, n+2)
+	// Создадим канал обрабатываемых задач
+	ch := make(chan Task)
+	// Индекс отправленных в канал задач
+	index := 0
 	// Счетчик кол-ва ошибок обработки задач
 	errCount := 0
 	// Код ошибки функции Run
@@ -92,7 +76,7 @@ func Run(tasks []Task, n, m int) error {
 	mu := sync.Mutex{}
 	for i := 0; i < n; i++ {
 		// Функция обработки задач из канала
-		go func(taskCh chan Task, stopWorkCh chan bool) error {
+		go func(taskCh chan Task) error {
 			defer wg.Done()
 			for {
 				select {
@@ -108,31 +92,29 @@ func Run(tasks []Task, n, m int) error {
 					if err != nil {
 						mu.Lock()
 						errCount++
-						// Если превышено предельно допустимое кол-во ошибок обработки задач, отправим "сигнал" о завершении работы рутин
-						if errCount >= m {
-							stopWorkCh <- true
-							// close(stopWorkCh) тут закрывать канал не будем, т.к. в этот блок можем и не попасть
-							// fmt.Println("Отправлен сигнал об остановке")
-							// return ErrErrorsLimitExceeded
-						}
 						mu.Unlock()
 						// fmt.Println("errCount = " + strconv.Itoa(errCount))
 					}
-				case val := <-stopWorkCh:
-					// Получен сигнал об остановке
-					// fmt.Println("i = " + strconv.Itoa(i) + " Exec of go routine")
-					// fmt.Println("Остановлен")
-					if val {
+					return nil
+				default:
+					// Если предельное кол-во ошибок достигнуто, закрываем канал и выдаем ошибку
+					mu.Lock()
+					if errCount >= m {
+						mu.Unlock()
+						close(taskCh)
 						errCode = saveErrCode(&mu, errCode)
 						return ErrErrorsLimitExceeded
 					}
+					mu.Unlock()
+					// Отправляем задачу в канал, если предельное кол-во ошибок еще не достигнуто
+					taskCh <- tasks[index]
+					index++
 					return nil
 				}
 			}
-		}(ch, stopCh)
+		}(ch)
 	}
 	wg.Wait()
-	close(stopCh)
 
 	// time.Sleep(2 * time.Second)
 
