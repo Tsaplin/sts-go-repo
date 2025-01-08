@@ -60,7 +60,7 @@ func Run(tasks []Task, n, m int) error {
 	}
 
 	// Создадим канал обрабатываемых задач
-	ch := make(chan Task)
+	ch := make(chan Task, 1)
 	// Индекс отправленных в канал задач
 	index := 0
 	// Кол-во задач в массиве
