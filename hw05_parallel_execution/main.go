@@ -117,8 +117,8 @@ func Run(tasks []Task, n, m int) error {
 					mu.Unlock()
 					// Отправляем задачу в канал, если предельное кол-во ошибок еще не достигнуто
 					// fmt.Println("index = " + strconv.Itoa(i) + " Push task to channel")
-					taskCh <- tasks[index]
 					mu.Lock()
+					taskCh <- tasks[index]
 					index++
 					mu.Unlock()
 				}
