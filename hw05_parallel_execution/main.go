@@ -112,9 +112,8 @@ func Run(tasks []Task, n, m int) error {
 
 					mu.Lock()
 					if index >= taskCnt {
-						mu.Unlock()
 						close(taskCh)
-						// return nil
+						return nil
 					}
 					mu.Unlock()
 					// Отправляем задачу в канал, если предельное кол-во ошибок еще не достигнуто
