@@ -62,9 +62,11 @@ func Run(tasks []Task, n, m int) error {
 	}
 
 	// Создадим канал обрабатываемых задач
-	ch := make(chan Task)
+	ch := make(chan Task, 1)
 	// Индекс отправленных в канал задач
 	index := 0
+	// Кол-во задач в массиве
+	taskCnt := len(tasks)
 	// Счетчик кол-ва ошибок обработки задач
 	errCount := 0
 	// Код ошибки функции Run
@@ -106,9 +108,11 @@ func Run(tasks []Task, n, m int) error {
 						return ErrErrorsLimitExceeded
 					}
 					mu.Unlock()
-					// Отправляем задачу в канал, если предельное кол-во ошибок еще не достигнуто
-					taskCh <- tasks[index]
-					index++
+					if index < taskCnt {
+						// Отправляем задачу в канал, если предельное кол-во ошибок еще не достигнуто
+						taskCh <- tasks[index]
+						index++
+					}
 					return nil
 				}
 			}
