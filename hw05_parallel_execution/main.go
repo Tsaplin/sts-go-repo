@@ -97,7 +97,7 @@ func Run(tasks []Task, n, m int) error {
 						mu.Unlock()
 						// fmt.Println("errCount = " + strconv.Itoa(errCount))
 					}
-					return nil
+					// return nil
 				default:
 					// Если предельное кол-во ошибок достигнуто, закрываем канал и выдаем ошибку
 					mu.Lock()
@@ -105,15 +105,24 @@ func Run(tasks []Task, n, m int) error {
 						mu.Unlock()
 						close(taskCh)
 						errCode = saveErrCode(&mu, errCode)
+						// fmt.Println("errCode = ", errCode)
 						return ErrErrorsLimitExceeded
 					}
 					mu.Unlock()
-					if index < taskCnt {
-						// Отправляем задачу в канал, если предельное кол-во ошибок еще не достигнуто
-						taskCh <- tasks[index]
-						index++
+
+					mu.Lock()
+					if index >= taskCnt {
+						mu.Unlock()
+						close(taskCh)
+						// return nil
 					}
-					return nil
+					mu.Unlock()
+					// Отправляем задачу в канал, если предельное кол-во ошибок еще не достигнуто
+					// fmt.Println("index = " + strconv.Itoa(i) + " Push task to channel")
+					taskCh <- tasks[index]
+					mu.Lock()
+					index++
+					mu.Unlock()
 				}
 			}
 		}(ch)
