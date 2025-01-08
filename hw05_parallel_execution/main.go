@@ -55,6 +55,8 @@ func saveErrCode(mu *sync.Mutex, errCode error) error {
 
 // Run starts tasks in n goroutines and stops its work when receiving m errors from tasks.
 func Run(tasks []Task, n, m int) error {
+	// fmt.Println("Start Count of active go routines = ", runtime.NumGoroutine())
+
 	if m <= 0 {
 		return ErrErrorsLimitExceeded
 	}
@@ -126,5 +128,8 @@ func Run(tasks []Task, n, m int) error {
 	}
 	wg.Wait()
 
+	// time.Sleep(2 * time.Second)
+
+	// fmt.Println("Finish Count of active go routines in function Run = ", runtime.NumGoroutine())
 	return errCode
 }
