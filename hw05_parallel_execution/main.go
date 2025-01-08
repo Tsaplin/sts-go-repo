@@ -127,8 +127,6 @@ func Run(tasks []Task, n, m int) error {
 	}
 	wg.Wait()
 
-	// time.Sleep(2 * time.Second)
-
 	// fmt.Println("Finish Count of active go routines in function Run = ", runtime.NumGoroutine())
 	return errCode
 }
