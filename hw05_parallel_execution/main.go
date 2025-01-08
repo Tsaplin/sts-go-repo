@@ -90,8 +90,7 @@ func Run(tasks []Task, n, m int) error {
 					// fmt.Println("i = " + strconv.Itoa(i) + " Exec of go routine")
 					// fmt.Println("Task tt was readen from channel of tasks = ", tt)
 					// Если при обработке задачи возникла ошибка, то увеличим значение errCount
-					var err = tt()
-					if err != nil {
+					if tt() != nil {
 						mu.Lock()
 						errCount++
 						mu.Unlock()
