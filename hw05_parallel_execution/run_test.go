@@ -1,4 +1,4 @@
-package hw05parallelexecution
+package main
 
 import (
 	"errors"
@@ -66,5 +66,11 @@ func TestRun(t *testing.T) {
 
 		require.Equal(t, runTasksCount, int32(tasksCount), "not all tasks were completed")
 		require.LessOrEqual(t, int64(elapsedTime), int64(sumTime/2), "tasks were run sequentially?")
+	})
+
+	t.Run("if M is negative, than return ErrErrorsLimitExceeded", func(t *testing.T) {
+		err := Run(nil, 3, -2)
+
+		require.Truef(t, errors.Is(err, ErrErrorsLimitExceeded), "actual err - %v", err)
 	})
 }
